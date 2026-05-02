@@ -1,0 +1,2 @@
+Django plugin for Testsweet
+===========================
