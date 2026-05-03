@@ -29,6 +29,15 @@ class PluginConformance:
         with unit('some.test'):
             pass
 
+    def session_actually_set_up_the_database(self):
+        # If session() didn't run setup_databases(), the auth_user
+        # table wouldn't exist and every other test in this file
+        # would have failed with OperationalError. Assert the schema
+        # is present explicitly so the implicit dependency is named.
+        from django.db import connection
+        tables = connection.introspection.table_names()
+        assert 'auth_user' in tables
+
 
 @test
 class SavepointBehavior:

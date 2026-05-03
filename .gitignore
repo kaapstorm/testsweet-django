@@ -1,3 +1,8 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
 
 # Artifacts just for Claude
 claude/plans/
