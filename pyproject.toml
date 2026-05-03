@@ -1,0 +1,20 @@
+[project]
+name = "testsweet-django"
+version = "0.1.0"
+description = "Django plugin for Testsweet"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "testsweet>=0.1.5",
+    "django>=4.2",
+]
+
+[project.entry-points."testsweet.plugins"]
+django = "testsweet_django"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/testsweet_django"]
