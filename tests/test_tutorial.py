@@ -19,10 +19,7 @@ from testsweet_django import TestCase, savepoint
 def user_fixture():
     with savepoint():
         user = User.objects.create(username='graham', password='Passw0rd!')
-        try:
-            yield user
-        finally:
-            user.delete()
+        yield user
 
 
 @test
@@ -36,10 +33,10 @@ def tutorial_func_fixture_yields_user():
 def tutorial_func_fixture_rolls_back():
     # Outside the fixture's savepoint, the row must not exist —
     # neither from this test nor from tutorial_func_fixture_yields_user.
-    assert not User.objects.filter(username='graham').exists()
+    assert not User.objects.exists()
     with user_fixture():
         assert User.objects.filter(username='graham').exists()
-    assert not User.objects.filter(username='graham').exists()
+    assert not User.objects.exists()
 
 
 # --- Class-scoped fixture with TestCase -----------------------------
@@ -51,18 +48,11 @@ class TutorialClassFixture(TestCase):
         self.user = User.objects.create(username='john', password='Passw0rd!')
         return self
 
-    def __exit__(self, exc_type, exc, tb):
-        self.user.delete()
-        return super().__exit__(exc_type, exc, tb)
-
     @contextmanager
     def __test_context__(self):
         with super().__test_context__():
             terry = User.objects.create(username='terry', password='Passw0rd!')
-            try:
-                yield
-            finally:
-                terry.delete()
+            yield
 
     def check_class_context(self):
         # john was created in __enter__ and is visible here.

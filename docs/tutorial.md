@@ -33,10 +33,7 @@ from testsweet_django import savepoint
 def user_fixture():
     with savepoint():
         user = User.objects.create(username='graham', password='Passw0rd!')
-        try:
-            yield user
-        finally:
-            user.delete()
+        yield user
 
 
 @test
@@ -44,13 +41,8 @@ def example_func_with_model_fixture():
     with user_fixture() as user:
         graham = User.objects.get(username='graham')
         assert user == graham
+    assert not User.objects.exists()
 ```
-
-The `user.delete()` in the `finally` block is belt-and-braces — the
-surrounding `savepoint()` will undo the row regardless. Keeping the
-explicit cleanup makes the fixture readable on its own and means it
-still tidies up if a future caller decides to use it outside a
-savepoint.
 
 ## A class-scoped fixture with `TestCase`
 
@@ -80,18 +72,11 @@ class ExampleClassWithModelFixture(TestCase):
         self.user = User.objects.create(username='john', password='Passw0rd!')
         return self
 
-    def __exit__(self, exc_type, exc, tb):
-        self.user.delete()
-        return super().__exit__(exc_type, exc, tb)
-
     @contextmanager
     def __test_context__(self):
         with super().__test_context__():
-            terry = User.objects.create(username='terry', password='Passw0rd!')
-            try:
-                yield
-            finally:
-                terry.delete()
+            User.objects.create(username='terry', password='Passw0rd!')
+            yield
 
     def check_class_context(self):
         assert User.objects.filter(username='john').exists()
@@ -112,11 +97,6 @@ What happens when testsweet runs this class:
    untouched.
 5. After every method, `__exit__` runs. The class-scope savepoint
    rolls back, taking `john` with it.
-
-Because rollback handles cleanup, the explicit `self.user.delete()`
-and `terry.delete()` calls aren't strictly necessary — same logic as
-the function example. They're shown here so the lifecycle reads
-clearly.
 
 ## Choosing between the two
 
