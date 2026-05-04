@@ -32,14 +32,14 @@ from testsweet_django import TestCase, savepoint
 
 @test
 def example():
-  with savepoint():
-    ...
+    with savepoint():
+        ...
 
 
 @test
 class Example(TestCase):
-  def check_something(self):
-    ...
+    def check_something(self):
+        ...
 ```
 
-See `docs/example.py` for more.
+See [`docs/tutorial.md`](docs/tutorial.md) for a walkthrough.
