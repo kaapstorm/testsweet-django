@@ -3,6 +3,8 @@ name = "testsweet-django"
 version = "0.1.0"
 description = "Django plugin for Testsweet"
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "testsweet>=0.1.5",
